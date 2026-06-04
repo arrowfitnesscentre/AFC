@@ -1749,6 +1749,48 @@ function Hero() {
 // CONTACT
 // ─────────────────────────────────────────────
 function Contact({ selectedPlan, setSelectedPlan }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // null | 'success' | 'error'
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    setErrorMessage('');
+
+    const formData = new FormData(e.target);
+
+    // Read the Web3Forms key from Vite env or fallback to a placeholder
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "YOUR_ACCESS_KEY_HERE";
+    formData.append("access_key", accessKey);
+    formData.append("subject", "New Contact Inquiry - Arrow Fitness Centre");
+    formData.append("from_name", "Arrow Fitness Website");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSubmitStatus('success');
+        e.target.reset();
+        setSelectedPlan('');
+      } else {
+        setSubmitStatus('error');
+        setErrorMessage(data.message || "Failed to send message. Please try again.");
+      }
+    } catch (err) {
+      setSubmitStatus('error');
+      setErrorMessage("Network error. Please check your internet connection.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section id="contact" className="py-24 bg-[#0A0A0A] relative overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 relative z-10">
@@ -1760,58 +1802,164 @@ function Contact({ selectedPlan, setSelectedPlan }) {
 
         <div className="grid lg:grid-cols-5 gap-6 lg:gap-10 items-stretch">
           <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="lg:col-span-3 bg-[#1A1A1A] border border-[#2a2a2a] rounded-2xl p-8 md:p-10 card-lift shadow-2xl flex flex-col justify-center">
-            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert("Thank you! Your message has been sent."); }}>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Full Name</label>
-                  <input type="text" placeholder="John Doe" className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors" required />
-                </div>
-                <div>
-                  <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Email ID</label>
-                  <input type="email" placeholder="john@example.com" className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors" required />
-                </div>
-              </div>
+            <AnimatePresence mode="wait">
+              {submitStatus === 'success' ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="text-center py-12 space-y-6"
+                >
+                  <div className="w-20 h-20 bg-green-500/10 border border-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto text-4xl shadow-[0_0_30px_rgba(34,197,94,0.2)] animate-pulse">
+                    ✓
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-white font-display text-3xl">MESSAGE SENT!</h3>
+                    <p className="text-gray-400 max-w-sm mx-auto leading-relaxed">
+                      Thank you for reaching out. We have received your query and our team will get back to you shortly.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSubmitStatus(null)}
+                    className="bg-yellow-400 text-black px-6 py-2.5 rounded-xl font-bold uppercase tracking-wider text-xs hover:bg-yellow-300 transition-colors"
+                  >
+                    Send Another Message
+                  </button>
+                </motion.div>
+              ) : (
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                  {/* Spam honeypot */}
+                  <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
 
-              <div className="grid md:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Age</label>
-                  <input type="number" min="10" max="100" placeholder="e.g. 25" className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors" required />
-                </div>
-                <div>
-                  <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Gender</label>
-                  <select className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors" required defaultValue="">
-                    <option value="" disabled>Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Phone Number</label>
-                  <input type="tel" placeholder="+91 98765 43210" className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors" required />
-                </div>
-              </div>
+                  {submitStatus === 'error' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm flex items-center justify-between"
+                    >
+                      <span>{errorMessage}</span>
+                      <button
+                        type="button"
+                        onClick={() => setSubmitStatus(null)}
+                        className="text-red-400 hover:text-red-300 font-bold ml-2"
+                      >
+                        ✕
+                      </button>
+                    </motion.div>
+                  )}
 
-              <div>
-                <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Package Interested In</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Student - 6 Months Plan"
-                  value={selectedPlan}
-                  onChange={(e) => setSelectedPlan(e.target.value)}
-                  className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors shadow-inner"
-                />
-              </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Full Name</label>
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="John Doe"
+                        className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors"
+                        required
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Email ID</label>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="john@example.com"
+                        className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors"
+                        required
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
 
-              <div>
-                <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Queries / Message</label>
-                <textarea rows="4" placeholder="How can we help you?" className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors resize-none" required></textarea>
-              </div>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Age</label>
+                      <input
+                        type="number"
+                        name="age"
+                        min="10"
+                        max="100"
+                        placeholder="e.g. 25"
+                        className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors"
+                        required
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Gender</label>
+                      <select
+                        name="gender"
+                        className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors"
+                        required
+                        defaultValue=""
+                        disabled={isSubmitting}
+                      >
+                        <option value="" disabled>Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Phone Number</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        placeholder="+91 98765 43210"
+                        className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors"
+                        required
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
 
-              <button type="submit" className="w-full bg-yellow-400 text-black font-bold text-lg uppercase tracking-widest py-4 rounded-xl hover:bg-yellow-300 transition-colors mt-4">
-                Send Message
-              </button>
-            </form>
+                  <div>
+                    <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Package Interested In</label>
+                    <input
+                      type="text"
+                      name="package"
+                      placeholder="e.g. Student - 6 Months Plan"
+                      value={selectedPlan}
+                      onChange={(e) => setSelectedPlan(e.target.value)}
+                      className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors shadow-inner"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-400 text-sm uppercase tracking-widest mb-2">Queries / Message</label>
+                    <textarea
+                      name="message"
+                      rows="4"
+                      placeholder="How can we help you?"
+                      className="w-full bg-[#222] border border-[#333] text-white rounded-xl px-4 py-3 focus:border-yellow-400 focus:outline-none transition-colors resize-none"
+                      required
+                      disabled={isSubmitting}
+                    ></textarea>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-yellow-400 text-black font-bold text-lg uppercase tracking-widest py-4 rounded-xl hover:bg-yellow-300 disabled:bg-yellow-400/50 disabled:cursor-not-allowed transition-all mt-4 flex items-center justify-center gap-2"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Sending Message...
+                      </>
+                    ) : (
+                      "Send Message"
+                    )}
+                  </button>
+                </form>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="lg:col-span-2 h-[400px] lg:h-auto min-h-[400px]">
