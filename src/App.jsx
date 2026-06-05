@@ -20,6 +20,8 @@ import transform5Left from './transform_images/transform_5(left).webp';
 import transform5Right from './transform_images/transform_5(right).webp';
 import transform6Left from './transform_images/transform_6(left).webp';
 import transform6Right from './transform_images/transform_6(right).webp';
+import transform7Left from './transform_images/transform_7(left).webp';
+import transform7Right from './transform_images/transform_7(right).webp';
 
 import coachBasith from './Coach_images/Basith.webp';
 import coachSabarikanth from './Coach_images/Sabarikanth.webp';
@@ -141,6 +143,14 @@ const TRANSFORMATIONS = [
     label: "Fat → Lean",
     beforeImg: transform6Left,
     afterImg: transform6Right
+  },
+  {
+    name: "Ashik",
+    months: 3,
+    kgLost: 8,
+    label: "Fat → Fit",
+    beforeImg: transform7Left,
+    afterImg: transform7Right
   }
 ];
 const PLANS = [
