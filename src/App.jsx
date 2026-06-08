@@ -115,7 +115,7 @@ const TRANSFORMATIONS = [
   {
     name: "Bhashini",
     months: 5,
-    kgLost: 12,
+    kgLost: 7,
     label: "Fat → Athletic",
     beforeImg: transform3Left,
     afterImg: transform3Right
@@ -147,7 +147,7 @@ const TRANSFORMATIONS = [
   {
     name: "Ashik",
     months: 3,
-    kgLost: 8,
+    kgLost: 10,
     label: "Fat → Fit",
     beforeImg: transform7Left,
     afterImg: transform7Right
