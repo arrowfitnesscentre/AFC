@@ -790,6 +790,40 @@ function Pricing({ setSelectedPlan }) {
           })}
         </div>
 
+        {/* Personal Training Card */}
+        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 }} className="mt-12 max-w-4xl mx-auto">
+          <TiltCard className="bg-[#1A1A1A] border border-yellow-400/30 rounded-[1.75rem] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between shadow-[0_10px_30px_rgba(255,215,0,0.05)] hover:border-yellow-400/60 transition-all duration-500">
+            <div className="mb-6 md:mb-0 md:mr-8 flex-1">
+              <div className="inline-block bg-yellow-400/10 border border-yellow-400/20 px-3 py-1 rounded-full mb-4">
+                <span className="text-yellow-400 font-bold text-[10px] uppercase tracking-widest flex items-center gap-1.5">
+                  <Flame className="w-3 h-3" /> Exclusive
+                </span>
+              </div>
+              <h3 className="font-display text-3xl sm:text-4xl text-white mb-2">Personal Training</h3>
+              <p className="text-gray-400 text-sm leading-relaxed mb-4">Get dedicated 1-on-1 coaching tailored to your body type and fitness goals. <strong className="text-yellow-400">It is highly affordable</strong> and designed to get you the best results.</p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+              <div className="bg-[#0A0A0A] border border-[#2a2a2a] rounded-xl p-5 flex-1 md:w-40 text-center relative overflow-hidden group hover:border-yellow-400/50 transition-colors">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-400/5 rounded-bl-full pointer-events-none group-hover:bg-yellow-400/10 transition-colors" />
+                <p className="text-gray-400 text-xs uppercase tracking-widest mb-1 font-bold">Package 1</p>
+                <p className="font-display text-3xl text-yellow-400">₹8,000</p>
+                <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">Per Month</p>
+              </div>
+
+              <div className="bg-yellow-400 border border-yellow-400 rounded-xl p-5 flex-1 md:w-40 text-center relative overflow-hidden group shadow-[0_10px_30px_rgba(255,215,0,0.2)] md:-translate-y-1 transition-transform">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-black text-yellow-400 text-[8px] font-black px-3 py-1 rounded-b-md uppercase tracking-[0.2em] shadow-md">
+                  Recommended
+                </div>
+                <div className="absolute top-0 right-0 w-16 h-16 bg-black/5 rounded-bl-full pointer-events-none group-hover:bg-black/10 transition-colors" />
+                <p className="text-black/60 text-xs uppercase tracking-widest mb-1 font-bold mt-2">Package 2</p>
+                <p className="font-display text-3xl text-black">₹5,000</p>
+                <p className="text-[10px] text-black/60 mt-1 uppercase tracking-widest">Per Month</p>
+              </div>
+            </div>
+          </TiltCard>
+        </motion.div>
+
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.5 }}
           className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 py-8 border-t border-[#1a1a1a] max-w-4xl mx-auto">
           <div className="flex items-center gap-4">
